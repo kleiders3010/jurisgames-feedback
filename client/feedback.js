@@ -104,11 +104,12 @@ export function openFeedback(o) {
   hp.setAttribute("aria-hidden", "true");
   const inc = el("input", { type: "checkbox", name: "details", checked: o.details ? true : false });
   const incRow = el("label", { className: "fbCheck" }, inc, el("span", { textContent: t(o.detailsLabel || "Include technical details") }));
-  const incNote = el("p", { className: "fbSmall", textContent: t(o.detailsNote || "Browser, system, screen size and recent errors. Never what you wrote or anyone's name.") });
+  const incNote = el("p", { className: "fbSmall", textContent: t(o.detailsNote || "Browser, system, screen size and recent errors. Nothing you made in the app, and no names.") });
   const pre = el("pre", { className: "fbPre", hidden: true });
   const see = el("button", { type: "button", className: "fbLink", name: "see", textContent: t("See what's sent") });
   const report = () => {
-    const r = { app: o.app, kind, message: msg.value.trim(), lang: document.documentElement.lang || navigator.language, version: o.version || "" };
+    const r = { app: o.app, kind, message: msg.value.trim(), lang: document.documentElement.lang || navigator.language };
+    if (o.version) r.version = o.version;
     if (email.value.trim()) r.email = email.value.trim();
     if (inc.checked) {
       try {
@@ -191,7 +192,7 @@ export const FEEDBACK_ES = {
   "What happened, or what would make it better?": "¿Qué pasó, o qué lo haría mejor?",
   "Your email, if you'd like an answer (optional)": "Tu email, si querés una respuesta (opcional)",
   "Include technical details": "Incluir detalles técnicos",
-  "Browser, system, screen size and recent errors. Never what you wrote or anyone's name.": "Navegador, sistema, tamaño de pantalla y errores recientes. Nunca lo que escribiste ni el nombre de nadie.",
+  "Browser, system, screen size and recent errors. Nothing you made in the app, and no names.": "Navegador, sistema, tamaño de pantalla y errores recientes. Nada de lo que hiciste en la app, y ningún nombre.",
   "See what's sent": "Ver lo que se envía",
   "Hide what's sent": "Ocultar lo que se envía",
   "Cancel": "Cancelar",
