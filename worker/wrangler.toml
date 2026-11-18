@@ -1,0 +1,18 @@
+# Jurisgames feedback: the "Send feedback" button of every free app posts here; reports are emailed, never stored.
+# The destination (where hello@jurisgames.com forwards to) is the secret FEEDBACK_TO (wrangler secret put).
+name = "jurisgames-feedback"
+main = "src/index.js"
+compatibility_date = "2026-09-01"
+workers_dev = false
+routes = [{ pattern = "feedback.jurisgames.com", custom_domain = true }]
+
+[[send_email]]
+name = "MAIL"
+
+[[durable_objects.bindings]]
+name = "LIMITS"
+class_name = "Limits"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["Limits"]
