@@ -13,7 +13,7 @@ FEED = A[0] or "http://127.0.0.1:8798"
 JUNTOS = A[1] or "http://127.0.0.1:8797"
 RONDA = A[2] or "http://127.0.0.1:8801"
 SUMATE = A[3] or "http://127.0.0.1:8802"
-ARGS = ["--use-fake-device-for-media-stream", "--use-fake-ui-for-media-stream"]
+ARGS = ["--disable-gpu", "--use-fake-device-for-media-stream", "--use-fake-ui-for-media-stream"]
 errors = []
 NET = [int(__import__("time").time()) % 50000]
 
@@ -34,6 +34,12 @@ def check(ok, what):
 
 
 check(not found, "no handler that can return false (cancels the event): " + ", ".join(found))
+# the apps' pages forbid eval (CSP without 'unsafe-eval'): a test's wait_for_function given a bare expression is eval'd
+# and throws there, so every one is written as a function (2026-11-23: this test died on Juntos's lobby)
+BARE_WAIT = re.compile(r"""wait_for_function\(\s*f?["'](?!\s*(\(|async\b|function\b))""")
+bare = [f"{os.path.relpath(f, HERE)}:{n}" for g in ["*.py", "../../Juntos/worker/*.py", "../../Ronda/worker/*.py", "../../Sumate/worker/*.py"]
+        for f in glob.glob(os.path.join(HERE, g)) for n, line in enumerate(open(f, encoding="utf-8"), 1) if BARE_WAIT.search(line)]
+check(not bare, "every wait_for_function is a function, not a bare expression (the pages forbid eval): " + ", ".join(bare))
 
 with sync_playwright() as p:
     b = p.chromium.launch(headless=True, channel="msedge", args=ARGS)
@@ -92,15 +98,15 @@ with sync_playwright() as p:
     pg.click("#start")
     pg.fill("#name", "Zelda Secretname")
     pg.click("#enter")
-    pg.wait_for_function("__S.joined", timeout=15000)
+    pg.wait_for_function("() => __S.joined", timeout=15000)
     code = pg.evaluate("__S.code")
     o = b.new_context(locale="en-US", permissions=["camera", "microphone"]).new_page()
     o.goto(f"{JUNTOS}/r/{code}?signal={sig}")
     o.fill("#name", "Yorick Othername")
     o.click("#enter")
-    pg.wait_for_function("__S.mesh.peers.size === 1 && [...__S.mesh.peers.values()][0].state === 'connected'", timeout=20000)
+    pg.wait_for_function("() => __S.mesh.peers.size === 1 && [...__S.mesh.peers.values()][0].state === 'connected'", timeout=20000)
     pg.wait_for_timeout(5000)  # a few connection measurements
-    pg.evaluate("document.getElementById('bLeave').click()")
+    pg.evaluate("document.getElementById('bLeave').click(); document.getElementById('justLeave')?.click()")  # a host is asked: just leave
     pg.wait_for_selector("#ended:not([hidden])")
     pg.click("#endedFeedback")
     pg.wait_for_selector(".fbSheet")
