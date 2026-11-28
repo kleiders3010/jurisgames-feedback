@@ -1,4 +1,4 @@
-// Jurisgames feedback: the "Send feedback" button of every free app (Juntos, Ronda, Sumate, Tasks, Sobres, QR, Ciclo, Papeles, Toma) posts here and
+// Jurisgames feedback: the "Send feedback" button of every free app (Juntos, Ronda, Sumate, Tasks, Sobres, QR, Ciclo, Papeles, Toma, Cada) posts here and
 // the report is emailed to the person who makes the apps (hello@jurisgames.com). Nothing is stored: no database, no
 // log of reports. To stop floods it counts reports per network per day under a one-way hash of the address (never
 // the address itself), deleted the next day, and caps the total per day.
@@ -8,7 +8,7 @@ const MAX_MESSAGE = 4000; // what the person wrote
 const MAX_DETAILS = 32 * 1024; // the technical details, as JSON
 const PER_NET_DAY = 8; // reports per network per day
 const PER_DAY = 150; // reports per day in total, so a flood can't bury the inbox
-const APPS = new Set(["juntos", "ronda", "sumate", "tasks", "sobres", "qr", "ciclo", "papeles", "toma"]);
+const APPS = new Set(["juntos", "ronda", "sumate", "tasks", "sobres", "qr", "ciclo", "papeles", "toma", "cada"]);
 const KINDS = new Set(["bug", "idea", "other"]);
 const FROM = "feedback@jurisgames.com";
 
